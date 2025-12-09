@@ -1,0 +1,15 @@
+streamlit
+ultralytics
+opencv-python-headless
+supervision
+numpy
+pandas
+Pillow
+torch
+torchvision
+tqdm
+scikit-learn
+umap-learn
+inference-gpu
+python-dotenv
+git+https://github.com/roboflow/sports.git

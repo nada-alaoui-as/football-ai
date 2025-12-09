@@ -1,0 +1,23 @@
+# Environment
+.env
+venv/
+env/
+
+# Outputs
+outputs/*.mp4
+*.mp4
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Models (trop gros pour git)
+models/*.pt
+!models/.gitkeep
+
+# IDE
+.vscode/
+.idea/
