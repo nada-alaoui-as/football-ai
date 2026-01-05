@@ -1,60 +1,133 @@
-# ⚽ Football AI Analysis System
+# Football AI Analysis System
 
-Système d'analyse vidéo de football utilisant la vision par ordinateur pour la détection, le tracking et l'analyse tactique.
+Computer vision system for football video analysis, providing real-time detection, tracking, and tactical insights.
 
-## 🎯 Fonctionnalités
+## Features
 
-- **Détection d'objets** : Joueurs, gardiens, arbitres et ballon (YOLOv11)
-- **Tracking** : Suivi des joueurs en temps réel (ByteTrack)
-- **Classification d'équipes** : Attribution automatique via clustering non supervisé (SigLIP + UMAP + K-Means)
-- **Visualisations tactiques** :
-  - Vue radar (projection 2D)
-  - Diagrammes de Voronoï (contrôle spatial)
-  - Tracking avec annotations
+- **Object Detection**: Players, goalkeepers, referees, and ball detection using YOLOv11
+- **Multi-Object Tracking**: Real-time player tracking with ByteTrack
+- **Team Classification**: Unsupervised team assignment using SigLIP embeddings with UMAP dimensionality reduction and K-Means clustering
+- **Tactical Visualizations**:
+  - Radar view with 2D pitch projection
+  - Voronoï diagrams for spatial control analysis
+  - Annotated tracking with player IDs and team colors
 
-## 🛠️ Technologies
+## Technical Stack
 
-- **YOLOv11** : Détection d'objets
-- **YOLOv8x-pose** : Détection de points clés du terrain
-- **ByteTrack** : Tracking multi-objets
-- **SigLIP** : Embeddings visuels pour classification
-- **Streamlit** : Interface web interactive
+- **YOLOv11**: Object detection (players, goalkeepers, referees, ball)
+- **YOLOv8x-pose**: Field keypoint detection for homography transformation
+- **ByteTrack**: Multi-object tracking algorithm
+- **SigLIP**: Visual embeddings for team classification
+- **UMAP + K-Means**: Unsupervised clustering for team assignment
+- **Streamlit**: Interactive web application
 
-## 📦 Installation
+## Installation
 ```bash
-# Cloner le repo
-git clone https://github.com/ton-username/football-6ai.git
-cd football-6ai
+# Clone the repository
+git clone https://github.com/nada-alaoui-as/football-ai.git
+cd football-ai
 
-# Installer les dépendances
+# Install dependencies
 pip install -r requirements.txt
 
-# Configurer les clés API
+# Configure API keys
 cp .env.example .env
-# Éditer .env avec tes clés Roboflow
+# Edit .env with your Roboflow API key
 ```
 
-## 🚀 Utilisation
+## Usage
 ```bash
 streamlit run app.py
 ```
 
-## 📊 Résultats
+Upload a football video and select the desired analysis type:
+- Detection and tracking with team classification
+- Radar view (2D tactical projection)
+- Voronoï diagrams (spatial control analysis)
 
-### Détection (YOLOv11)
-- **Joueurs** : 99.3% mAP50
-- **Gardiens** : 94.1% mAP50
-- **Arbitres** : 96.2% mAP50
-- **Ballon** : 60.1% mAP50
+## Model Performance
 
-### Keypoints terrain (YOLOv8x-pose)
-- **mAP50 Box** : 99.5%
-- **mAP50 Pose** : 97.0%
+### YOLOv11 - Object Detection
+Trained on 450 images (100 epochs, batch size 2, image size 1280x1280)
 
-## 📄 Licence
+| Class      | Instances | Precision | Recall | mAP50 |
+|------------|-----------|-----------|--------|-------|
+| Players    | 973       | 92.9%     | 98.9%  | 99.3% |
+| Goalkeepers| 39        | 87.2%     | 87.2%  | 94.1% |
+| Referees   | 117       | 81.9%     | 94.9%  | 96.2% |
+| Ball       | 45        | 83.3%     | 55.5%  | 60.1% |
 
-MIT License - voir [LICENSE](LICENSE)
+**Overall**: 87.4% mAP50, 59.3% mAP50-95
 
-## 👤 Auteur
+### YOLOv8x-pose - Field Keypoints
+Trained on 222 images (100 epochs, 32 keypoints)
 
-Nada - Stage INTELLCAP (Rabat) - 2025
+- **Box mAP50**: 99.5%
+- **Pose mAP50**: 97.0%
+- **Precision**: 99.8%
+- **Recall**: 100%
+
+## Project Structure
+```
+football-ai/
+├── app.py                 # Streamlit application
+├── config.py             # Configuration file
+├── requirements.txt      # Python dependencies
+├── utils/                # Core modules
+│   ├── detection.py      # Object detection
+│   ├── tracking.py       # Player tracking
+│   ├── classification.py # Team assignment
+│   └── visualization.py  # Rendering utilities
+└── notebooks/            # Development notebooks
+    └── pipeline.ipynb    # Complete analysis pipeline
+```
+
+## Key Technical Details
+
+**Team Classification Pipeline**:
+1. Extract player crops (stride 30 frames)
+2. Generate 768-dimensional embeddings using SigLIP
+3. Reduce to 3D using UMAP
+4. Cluster into 2 teams using K-Means
+5. Resolve goalkeeper assignments using spatial centroids
+
+**Homography Transformation**:
+- 32 field keypoints detected with YOLOv8x-pose
+- ViewTransformer computes perspective transformation matrix
+- Projects player positions onto 2D tactical view
+
+**Optimization**:
+- AdamW optimizer with decoupled weight decay
+- Adaptive learning rate with momentum
+- Regularization to prevent overfitting
+
+## Limitations
+
+- Ball detection performance limited by small object size and rapid movement
+- Dataset size (450 images) below recommended threshold (500+)
+- Lighting variations affect detection consistency
+- Single-camera perspective limits full pitch coverage
+
+## Future Improvements
+
+- Multi-camera fusion for complete pitch coverage
+- Enhanced ball tracking with temporal filtering
+- Real-time performance optimization
+- Advanced tactical metrics (possession zones, pressure maps, distance covered)
+- Predictive models for player behavior
+
+## License
+
+MIT License - see [LICENSE](LICENSE)
+
+## Author
+
+Nada Alaoui - 2025
+
+## Acknowledgments
+
+Developed using:
+- Roboflow for dataset management and annotation
+- Ultralytics YOLO for detection models
+- Supervision library for tracking and visualization
+- Google Colab for model training (Tesla T4 GPU)
